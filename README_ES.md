@@ -5,11 +5,11 @@
 
 Implemente su aplicación web privada ChatGPT de forma gratuita con un solo clic.
 
-[Demo demo](https://chat-gpt-next-web.vercel.app/) / [Problemas de comentarios](https://github.com/Yidadaa/ChatGPT-Next-Web/issues) / [Únete a Discord](https://discord.gg/zrhvHCr79N) / [Grupo QQ](https://user-images.githubusercontent.com/16968934/228190818-7dd00845-e9b9-4363-97e5-44c507ac76da.jpeg) / [Desarrolladores de consejos](https://user-images.githubusercontent.com/16968934/227772541-5bcd52d8-61b7-488c-a203-0330d8006e2b.jpg) / [Donar](#捐赠-donate-usdt)
+[Demo demo](https://chat-gpt-next-web.vercel.app/) / [Problemas de comentarios](https://github.com/huangkaoya/ChatGPT-Next-Web/issues) / [Únete a Discord](https://discord.gg/zrhvHCr79N) / [Grupo QQ](https://user-images.githubusercontent.com/16968934/228190818-7dd00845-e9b9-4363-97e5-44c507ac76da.jpeg) / [Desarrolladores de consejos](https://user-images.githubusercontent.com/16968934/227772541-5bcd52d8-61b7-488c-a203-0330d8006e2b.jpg) / [Donar](#捐赠-donate-usdt)
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FYidadaa%2FChatGPT-Next-Web\&env=OPENAI_API_KEY\&env=CODE\&project-name=chatgpt-next-web\&repository-name=ChatGPT-Next-Web)
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/Yidadaa/ChatGPT-Next-Web)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/huangkaoya/ChatGPT-Next-Web)
 
 ![主界面](./docs/images/cover.png)
 
@@ -52,7 +52,7 @@ Puede destacar / ver este proyecto o seguir al autor para recibir notificaciones
 
 > Después de configurar la contraseña, el usuario debe completar manualmente el código de acceso en la página de configuración para chatear normalmente, de lo contrario, se solicitará el estado no autorizado a través de un mensaje.
 
-> **advertir**: Asegúrese de establecer el número de dígitos de la contraseña lo suficientemente largo, preferiblemente más de 7 dígitos, de lo contrario[Será volado](https://github.com/Yidadaa/ChatGPT-Next-Web/issues/518)。
+> **advertir**: Asegúrese de establecer el número de dígitos de la contraseña lo suficientemente largo, preferiblemente más de 7 dígitos, de lo contrario[Será volado](https://github.com/huangkaoya/ChatGPT-Next-Web/issues/518)。
 
 Este proyecto proporciona control de permisos limitado, agregue el nombre al nombre en la página Variables de entorno del Panel de control del proyecto Vercel `CODE` Variables de entorno con valores para contraseñas personalizadas separadas por comas:
 
@@ -106,7 +106,7 @@ Si no desea que los usuarios consulte el saldo, establezca esta variable de ento
 
 Haga clic en el botón de abajo para iniciar el desarrollo secundario:
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/Yidadaa/ChatGPT-Next-Web)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/huangkaoya/ChatGPT-Next-Web)
 
 Antes de empezar a escribir código, debe crear uno nuevo en la raíz del proyecto `.env.local` archivo, lleno de variables de entorno:
 
@@ -166,7 +166,7 @@ bash <(curl -s https://raw.githubusercontent.com/Yidadaa/ChatGPT-Next-Web/main/s
 
 ### Colaboradores
 
-[Ver la lista de colaboradores del proyecto](https://github.com/Yidadaa/ChatGPT-Next-Web/graphs/contributors)
+[Ver la lista de colaboradores del proyecto](https://github.com/huangkaoya/ChatGPT-Next-Web/graphs/contributors)
 
 ## Licencia de código abierto
 
