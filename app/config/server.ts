@@ -1,5 +1,5 @@
 import md5 from "spark-md5";
-import { DEFAULT_MODELS } from "../constant";
+import { DEFAULT_MODELS, DEFAULT_GA_ID } from "../constant";
 
 declare global {
   namespace NodeJS {
@@ -120,12 +120,15 @@ export const getServerSideConfig = () => {
   if (disableGPT4) {
     if (customModels) customModels += ",";
     customModels += DEFAULT_MODELS.filter(
-      (m) => m.name.startsWith("gpt-4") && !m.name.startsWith("gpt-4o-mini"),
+      (m) =>
+        (m.name.startsWith("gpt-4") || m.name.startsWith("chatgpt-4o")) &&
+        !m.name.startsWith("gpt-4o-mini"),
     )
       .map((m) => "-" + m.name)
       .join(",");
     if (
-      defaultModel.startsWith("gpt-4") &&
+      (defaultModel.startsWith("gpt-4") ||
+        defaultModel.startsWith("chatgpt-4o")) &&
       !defaultModel.startsWith("gpt-4o-mini")
     )
       defaultModel = "";
@@ -211,6 +214,7 @@ export const getServerSideConfig = () => {
     cloudflareKVTTL: process.env.CLOUDFLARE_KV_TTL,
 
     gtmId: process.env.GTM_ID,
+    gaId: process.env.GA_ID || DEFAULT_GA_ID,
 
     needCode: ACCESS_CODES.size > 0,
     code: process.env.CODE,

@@ -28,6 +28,7 @@ import DeleteIcon from "../icons/clear.svg";
 import PinIcon from "../icons/pin.svg";
 import EditIcon from "../icons/rename.svg";
 import ConfirmIcon from "../icons/confirm.svg";
+import CloseIcon from "../icons/close.svg";
 import CancelIcon from "../icons/cancel.svg";
 import ImageIcon from "../icons/image.svg";
 
@@ -38,6 +39,8 @@ import BottomIcon from "../icons/bottom.svg";
 import StopIcon from "../icons/pause.svg";
 import RobotIcon from "../icons/robot.svg";
 import SizeIcon from "../icons/size.svg";
+import QualityIcon from "../icons/hd.svg";
+import StyleIcon from "../icons/palette.svg";
 import PluginIcon from "../icons/plugin.svg";
 
 import {
@@ -51,6 +54,7 @@ import {
   useAppConfig,
   DEFAULT_TOPIC,
   ModelType,
+  usePluginStore,
 } from "../store";
 
 import {
@@ -62,6 +66,8 @@ import {
   getMessageImages,
   isVisionModel,
   isDalle3,
+  showPlugins,
+  safeLocalStorage,
 } from "../utils";
 
 import { uploadImage as uploadImageRemote } from "@/app/utils/chat";
@@ -69,7 +75,7 @@ import { uploadImage as uploadImageRemote } from "@/app/utils/chat";
 import dynamic from "next/dynamic";
 
 import { ChatControllerPool } from "../client/controller";
-import { DalleSize } from "../typing";
+import { DalleSize, DalleQuality, DalleStyle } from "../typing";
 import { Prompt, usePromptStore } from "../store/prompt";
 import Locale from "../locales";
 
@@ -93,7 +99,6 @@ import {
   REQUEST_TIMEOUT_MS,
   UNFINISHED_INPUT,
   ServiceProvider,
-  Plugin,
 } from "../constant";
 import { Avatar } from "./emoji";
 import { ContextPrompts, MaskAvatar, MaskConfig } from "./mask";
@@ -104,6 +109,8 @@ import { ExportMessageModal } from "./exporter";
 import { getClientConfig } from "../config/client";
 import { useAllModels } from "../utils/hooks";
 import { MultimodalContent } from "../client/api";
+
+const localStorage = safeLocalStorage();
 
 const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
   loading: () => <LoadingIcon />,
@@ -437,6 +444,7 @@ export function ChatActions(props: {
   const config = useAppConfig();
   const navigate = useNavigate();
   const chatStore = useChatStore();
+  const pluginStore = usePluginStore();
 
   // switch themes
   const theme = config.theme;
@@ -485,9 +493,17 @@ export function ChatActions(props: {
   const [showUploadImage, setShowUploadImage] = useState(false);
 
   const [showSizeSelector, setShowSizeSelector] = useState(false);
+  const [showQualitySelector, setShowQualitySelector] = useState(false);
+  const [showStyleSelector, setShowStyleSelector] = useState(false);
   const dalle3Sizes: DalleSize[] = ["1024x1024", "1792x1024", "1024x1792"];
+  const dalle3Qualitys: DalleQuality[] = ["standard", "hd"];
+  const dalle3Styles: DalleStyle[] = ["vivid", "natural"];
   const currentSize =
     chatStore.currentSession().mask.modelConfig?.size ?? "1024x1024";
+  const currentQuality =
+    chatStore.currentSession().mask.modelConfig?.quality ?? "standard";
+  const currentStyle =
+    chatStore.currentSession().mask.modelConfig?.style ?? "vivid";
 
   useEffect(() => {
     const show = isVisionModel(currentModel);
@@ -659,30 +675,86 @@ export function ChatActions(props: {
         />
       )}
 
-      <ChatAction
-        onClick={() => setShowPluginSelector(true)}
-        text={Locale.Plugin.Name}
-        icon={<PluginIcon />}
-      />
+      {isDalle3(currentModel) && (
+        <ChatAction
+          onClick={() => setShowQualitySelector(true)}
+          text={currentQuality}
+          icon={<QualityIcon />}
+        />
+      )}
+
+      {showQualitySelector && (
+        <Selector
+          defaultSelectedValue={currentQuality}
+          items={dalle3Qualitys.map((m) => ({
+            title: m,
+            value: m,
+          }))}
+          onClose={() => setShowQualitySelector(false)}
+          onSelection={(q) => {
+            if (q.length === 0) return;
+            const quality = q[0];
+            chatStore.updateCurrentSession((session) => {
+              session.mask.modelConfig.quality = quality;
+            });
+            showToast(quality);
+          }}
+        />
+      )}
+
+      {isDalle3(currentModel) && (
+        <ChatAction
+          onClick={() => setShowStyleSelector(true)}
+          text={currentStyle}
+          icon={<StyleIcon />}
+        />
+      )}
+
+      {showStyleSelector && (
+        <Selector
+          defaultSelectedValue={currentStyle}
+          items={dalle3Styles.map((m) => ({
+            title: m,
+            value: m,
+          }))}
+          onClose={() => setShowStyleSelector(false)}
+          onSelection={(s) => {
+            if (s.length === 0) return;
+            const style = s[0];
+            chatStore.updateCurrentSession((session) => {
+              session.mask.modelConfig.style = style;
+            });
+            showToast(style);
+          }}
+        />
+      )}
+
+      {showPlugins(currentProviderName, currentModel) && (
+        <ChatAction
+          onClick={() => {
+            if (pluginStore.getAll().length == 0) {
+              navigate(Path.Plugins);
+            } else {
+              setShowPluginSelector(true);
+            }
+          }}
+          text={Locale.Plugin.Name}
+          icon={<PluginIcon />}
+        />
+      )}
       {showPluginSelector && (
         <Selector
           multiple
           defaultSelectedValue={chatStore.currentSession().mask?.plugin}
-          items={[
-            {
-              title: Locale.Plugin.Artifacts,
-              value: Plugin.Artifacts,
-            },
-          ]}
+          items={pluginStore.getAll().map((item) => ({
+            title: `${item?.title}@${item?.version}`,
+            value: item?.id,
+          }))}
           onClose={() => setShowPluginSelector(false)}
           onSelection={(s) => {
-            const plugin = s[0];
             chatStore.updateCurrentSession((session) => {
-              session.mask.plugin = s;
+              session.mask.plugin = s as string[];
             });
-            if (plugin) {
-              showToast(plugin);
-            }
           }}
         />
       )}
@@ -872,7 +944,7 @@ function _Chat() {
       .onUserInput(userInput, attachImages)
       .then(() => setIsLoading(false));
     setAttachImages([]);
-    localStorage.setItem(LAST_INPUT_KEY, userInput);
+    chatStore.setLastInput(userInput);
     setUserInput("");
     setPromptHints([]);
     if (!isMobileScreen) inputRef.current?.focus();
@@ -938,7 +1010,7 @@ function _Chat() {
       userInput.length <= 0 &&
       !(e.metaKey || e.altKey || e.ctrlKey)
     ) {
-      setUserInput(localStorage.getItem(LAST_INPUT_KEY) ?? "");
+      setUserInput(chatStore.lastInput ?? "");
       e.preventDefault();
       return;
     }
@@ -1460,6 +1532,11 @@ function _Chat() {
                         </>
                       )}
                     </div>
+                    {!isUser && (
+                      <div className={styles["chat-model-name"]}>
+                        {message.model}
+                      </div>
+                    )}
 
                     {showActions && (
                       <div className={styles["chat-message-actions"]}>
@@ -1504,9 +1581,29 @@ function _Chat() {
                       </div>
                     )}
                   </div>
-                  {showTyping && (
+                  {message?.tools?.length == 0 && showTyping && (
                     <div className={styles["chat-message-status"]}>
                       {Locale.Chat.Typing}
+                    </div>
+                  )}
+                  {/*@ts-ignore*/}
+                  {message?.tools?.length > 0 && (
+                    <div className={styles["chat-message-tools"]}>
+                      {message?.tools?.map((tool) => (
+                        <div
+                          key={tool.id}
+                          className={styles["chat-message-tool"]}
+                        >
+                          {tool.isError === false ? (
+                            <ConfirmIcon />
+                          ) : tool.isError === true ? (
+                            <CloseIcon />
+                          ) : (
+                            <LoadingButtonIcon />
+                          )}
+                          <span>{tool?.function?.name}</span>
+                        </div>
+                      ))}
                     </div>
                   )}
                   <div className={styles["chat-message-item"]}>
@@ -1518,7 +1615,7 @@ function _Chat() {
                         message.content.length === 0 &&
                         !isUser
                       }
-                      onContextMenu={(e) => onRightClick(e, message)}
+                      //   onContextMenu={(e) => onRightClick(e, message)} // hard to use
                       onDoubleClickCapture={() => {
                         if (!isMobileScreen) return;
                         setUserInput(getMessageTextContent(message));
