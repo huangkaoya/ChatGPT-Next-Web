@@ -43,6 +43,10 @@ const cn = {
       Delete: "删除",
       Edit: "编辑",
       FullScreen: "全屏",
+      RefreshTitle: "刷新标题",
+      RefreshToast: "已发送刷新标题请求",
+      Speech: "朗读",
+      StopSpeech: "停止",
     },
     Commands: {
       new: "新建聊天",
@@ -50,6 +54,7 @@ const cn = {
       next: "下一个聊天",
       prev: "上一个聊天",
       clear: "清除上下文",
+      fork: "复制聊天",
       del: "删除聊天",
     },
     InputActions: {
@@ -76,11 +81,21 @@ const cn = {
       return inputHints + "，/ 触发补全，: 触发命令";
     },
     Send: "发送",
+    StartSpeak: "说话",
+    StopSpeak: "停止",
     Config: {
       Reset: "清除记忆",
       SaveAs: "存为面具",
     },
     IsContext: "预设提示词",
+    ShortcutKey: {
+      Title: "键盘快捷方式",
+      newChat: "打开新聊天",
+      focusInput: "聚焦输入框",
+      copyLastMessage: "复制最后一个回复",
+      copyLastCode: "复制最后一个代码块",
+      showShortcutKey: "显示快捷方式",
+    },
   },
   Export: {
     Title: "分享聊天记录",
@@ -461,6 +476,10 @@ const cn = {
     },
 
     Model: "模型 (model)",
+    CompressModel: {
+      Title: "压缩模型",
+      SubTitle: "用于压缩历史记录的模型",
+    },
     Temperature: {
       Title: "随机性 (temperature)",
       SubTitle: "值越大，回复越随机",
@@ -481,6 +500,26 @@ const cn = {
       Title: "频率惩罚度 (frequency_penalty)",
       SubTitle: "值越大，越有可能降低重复字词",
     },
+    TTS: {
+      Enable: {
+        Title: "启用文本转语音",
+        SubTitle: "启用文本生成语音服务",
+      },
+      Autoplay: {
+        Title: "启用自动朗读",
+        SubTitle: "自动生成语音并播放，需先开启文本转语音开关",
+      },
+      Model: "模型",
+      Engine: "转换引擎",
+      Voice: {
+        Title: "声音",
+        SubTitle: "生成语音时使用的声音",
+      },
+      Speed: {
+        Title: "速度",
+        SubTitle: "生成语音的速度",
+      },
+    },
   },
   Store: {
     DefaultTopic: "新的聊天",
@@ -495,8 +534,8 @@ const cn = {
     },
   },
   Copy: {
-    Success: "已写入剪切板",
-    Failed: "复制失败，请赋予剪切板权限",
+    Success: "已写入剪贴板",
+    Failed: "复制失败，请赋予剪贴板权限",
   },
   Download: {
     Success: "内容已下载到您的目录。",
